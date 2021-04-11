@@ -2,7 +2,7 @@
 
 ## progress
 - [Course website](https://pdos.csail.mit.edu/6.S081/2020/schedule.html)
-- [ ] [Lab util: Unix utilities]
+- [x] [Lab util: Unix utilities](https://github.com/WillDwz/MIT-6.S081-labs/tree/util)
 - [ ] [Lab syscall: System calls]
 - [ ] [Lab pgtbl: Page tables]
 - [ ] [Lab traps: Trap]
