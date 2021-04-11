@@ -3,7 +3,7 @@
 ## progress
 - [Course website](https://pdos.csail.mit.edu/6.S081/2020/schedule.html)
 - [x] [Lab util: Unix utilities](https://github.com/WillDwz/MIT-6.S081-labs/tree/util)
-- [ ] [Lab syscall: System calls]
+- [x] [Lab syscall: System calls](https://github.com/WillDwz/MIT-6.S081-labs/tree/syscall)
 - [ ] [Lab pgtbl: Page tables]
 - [ ] [Lab traps: Trap]
 - [ ] [Lab lazy: Lazy allocation]
