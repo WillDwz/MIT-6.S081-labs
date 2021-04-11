@@ -1,7 +1,7 @@
 # MIT 6.S081 Introduction to Operating Systems Fall 2020
 
 ## progress
-- [Course website](https://pdos.csail.mit.edu/6.S081/2020/schedule.html)
+## [Course Website](https://pdos.csail.mit.edu/6.S081/2020/schedule.html)
 - [x] [Lab util: Unix utilities](https://github.com/WillDwz/MIT-6.S081-labs/tree/util)
 - [x] [Lab syscall: System calls](https://github.com/WillDwz/MIT-6.S081-labs/tree/syscall)
 - [ ] [Lab pgtbl: Page tables]
