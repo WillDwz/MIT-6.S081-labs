@@ -120,6 +120,8 @@ int sys_sigreturn(void){
   p->trapframe->epc = p->alarm.epc;
   p->trapframe->ra = p->alarm.ra;
   p->trapframe->sp = p->alarm.sp;
+  p->trapframe->gp = p->alarm.gp;
+  p->trapframe->tp = p->alarm.tp;
 
   p->trapframe->s0 = p->alarm.s0;
   p->trapframe->s1 = p->alarm.s1;
@@ -133,6 +135,24 @@ int sys_sigreturn(void){
   p->trapframe->s9 = p->alarm.s9;
   p->trapframe->s10 = p->alarm.s10;
   p->trapframe->s11 = p->alarm.s11;
+
+  p->trapframe->t0 = p->alarm.t0;
+  p->trapframe->t1 = p->alarm.t1;
+  p->trapframe->t2 = p->alarm.t2;
+  p->trapframe->t3 = p->alarm.t3;
+  p->trapframe->t4 = p->alarm.t4;
+  p->trapframe->t5 = p->alarm.t5;
+  p->trapframe->t6 = p->alarm.t6;
+
+  p->trapframe->a0 = p->alarm.a0;
+  p->trapframe->a1 = p->alarm.a1;
+  p->trapframe->a2 = p->alarm.a2;
+  p->trapframe->a3 = p->alarm.a3;
+  p->trapframe->a4 = p->alarm.a4;
+  p->trapframe->a5 = p->alarm.a5;
+  p->trapframe->a6 = p->alarm.a6;
+  p->trapframe->a7 = p->alarm.a6;
+
 
   p->in = 0;
   return 0;
