@@ -158,6 +158,12 @@ void            uartputc_sync(int);
 int             uartgetc(void);
 
 // vm.c
+//lab
+void            kuvmfree(pagetable_t);
+pagetable_t     ukvmcreate();
+void            ukvmmap(pagetable_t,uint64, uint64, uint64, int);
+void            kmapu(pagetable_t, pagetable_t, uint64, uint64);
+//lab
 void            kvminit(void);
 void            kvminithart(void);
 uint64          kvmpa(uint64);
@@ -178,6 +184,10 @@ uint64          walkaddr(pagetable_t, uint64);
 int             copyout(pagetable_t, uint64, char *, uint64);
 int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
+
+// vmcopyin.c
+int             copyin_new(pagetable_t, char*, uint64, uint64);
+int             copyinstr_new(pagetable_t, char*, uint64, uint64);
 
 // plic.c
 void            plicinit(void);

@@ -115,7 +115,9 @@ found:
 
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
-  if(p->pagetable == 0){
+  p->k_pagetable = ukvmcreate();
+
+  if(p->pagetable == 0 || p->k_pagetable == 0){
     freeproc(p);
     release(&p->lock);
     return 0;
@@ -141,7 +143,10 @@ freeproc(struct proc *p)
   p->trapframe = 0;
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+  if (p->k_pagetable)
+    kuvmfree(p->k_pagetable);
   p->pagetable = 0;
+  p->k_pagetable = 0;
   p->sz = 0;
   p->pid = 0;
   p->parent = 0;
@@ -229,7 +234,7 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
-
+  kmapu(p->pagetable, p->k_pagetable, 0, p->sz);
   release(&p->lock);
 }
 
@@ -249,6 +254,7 @@ growproc(int n)
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
+  kmapu(p->pagetable, p->k_pagetable, p->sz,sz);
   p->sz = sz;
   return 0;
 }
@@ -295,6 +301,7 @@ fork(void)
 
   np->state = RUNNABLE;
 
+  kmapu(np->pagetable, np->k_pagetable, 0, np->sz);
   release(&np->lock);
 
   return pid;
@@ -473,12 +480,20 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
-        swtch(&c->context, &p->context);
 
+        // change to process's kernel pgtb
+        w_satp(MAKE_SATP(p->k_pagetable));
+        sfence_vma();
+        //
+
+        swtch(&c->context, &p->context);
         // Process is done running for now.
         // It should have changed its p->state before coming back.
         c->proc = 0;
 
+        //use global kernel pgtb
+        kvminithart();
+        //
         found = 1;
       }
       release(&p->lock);

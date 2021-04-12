@@ -116,6 +116,7 @@ exec(char *path, char **argv)
   p->trapframe->sp = sp; // initial stack pointer
   proc_freepagetable(oldpagetable, oldsz);
 
+  kmapu(p->pagetable, p->k_pagetable, 0, p->sz);
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
  bad:

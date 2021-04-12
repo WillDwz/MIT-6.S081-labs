@@ -15,6 +15,7 @@ extern char etext[];  // kernel.ld sets this to end of kernel code.
 
 extern char trampoline[]; // trampoline.S
 
+extern 
 /*
  * create a direct-map page table for the kernel.
  */
@@ -198,13 +199,58 @@ uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
 // returns 0 if out of memory.
 pagetable_t
 uvmcreate()
-{
+{ 
   pagetable_t pagetable;
   pagetable = (pagetable_t) kalloc();
   if(pagetable == 0)
     return 0;
   memset(pagetable, 0, PGSIZE);
   return pagetable;
+}
+void
+ukvmmap(pagetable_t pgt, uint64 va, uint64 pa, uint64 sz, int perm)
+{
+  if(mappages(pgt, va, sz, pa, perm) != 0)
+    panic("lab kvmmap");
+}
+
+pagetable_t
+ukvmcreate()
+{
+  pagetable_t pagetable = uvmcreate();
+  for (int i = 1; i < 512; ++i){
+    pagetable[i] = kernel_pagetable[i];
+  }
+
+  ukvmmap(pagetable,UART0, UART0, PGSIZE, PTE_R | PTE_W);
+  ukvmmap(pagetable,VIRTIO0, VIRTIO0, PGSIZE, PTE_R | PTE_W);
+  ukvmmap(pagetable,CLINT, CLINT, 0x10000, PTE_R | PTE_W);
+  ukvmmap(pagetable,PLIC, PLIC, 0x400000, PTE_R | PTE_W);
+
+  return pagetable;
+}
+
+//user kernel va one to one map;
+void kmapu(pagetable_t user, pagetable_t kernel, uint64 oldsz, uint64 newsz){
+  if (newsz >= PLIC)
+    panic("kmapu: too large newsz");
+  pte_t *u;
+  pte_t *k;
+  uint64 va;
+  for(va = oldsz; va < newsz; va += PGSIZE){
+    u = walk(user, va, 0);
+    if((u != 0) && (*u & PTE_V)){
+
+      k = walk(kernel, va, 1);
+      if(k==0)
+        panic("shit");
+      *k = *u;
+      *k &= ~(PTE_U | PTE_W | PTE_X);
+    }else{
+      panic("bad bad");
+    }
+  }
+  
 }
 
 // Load the user initcode into address 0 of pagetable,
@@ -298,7 +344,24 @@ uvmfree(pagetable_t pagetable, uint64 sz)
     uvmunmap(pagetable, 0, PGROUNDUP(sz)/PGSIZE, 1);
   freewalk(pagetable);
 }
+void
+kuvmfree(pagetable_t pagetable)
+{
+  pte_t pte = pagetable[0];
+  pagetable_t level1 = (pagetable_t) PTE2PA(pte);
 
+  for (int i = 0; i < 512; ++i){
+      pte_t pte = level1[i];
+      if((pte & PTE_V) && (pte & (PTE_R|PTE_W|PTE_X)) == 0){
+        // this PTE points to a lower-level page table.
+        uint64 child = PTE2PA(pte);
+        kfree((void *)child);
+        level1[i] = 0;
+      }
+  }
+  kfree((void*)pagetable);
+  kfree((void*)level1);
+}
 // Given a parent process's page table, copy
 // its memory into a child's page table.
 // Copies both the page table and the
@@ -379,6 +442,8 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
 int
 copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 {
+  return copyin_new(pagetable,dst,srcva,len);
+  
   uint64 n, va0, pa0;
 
   while(len > 0){
@@ -405,6 +470,8 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 int
 copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
 {
+  return copyinstr_new(pagetable,dst,srcva,max);
+
   uint64 n, va0, pa0;
   int got_null = 0;
 
