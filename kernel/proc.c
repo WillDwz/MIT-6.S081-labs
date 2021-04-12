@@ -106,7 +106,10 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
-
+  p->ticks = 0;
+  p->interval = 0;
+  p->handler = 0;
+  p->in = 0;
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     release(&p->lock);
@@ -120,7 +123,8 @@ found:
     release(&p->lock);
     return 0;
   }
-
+  
+  // p->in_alarm_handler = 0;
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
