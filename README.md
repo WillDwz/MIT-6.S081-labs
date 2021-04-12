@@ -4,7 +4,7 @@
 
 - [x] [Lab util: Unix utilities](https://github.com/WillDwz/MIT-6.S081-labs/tree/util)
 - [x] [Lab syscall: System calls](https://github.com/WillDwz/MIT-6.S081-labs/tree/syscall)
-- [ ] [Lab pgtbl: Page tables]
+- [x] [Lab pgtbl: Page tables](https://github.com/WillDwz/MIT-6.S081-labs/tree/pgtbl)
 - [ ] [Lab traps: Trap]
 - [ ] [Lab lazy: Lazy allocation]
 - [ ] [Lab cow: Copy-on-write fork]
