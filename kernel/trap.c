@@ -67,7 +67,12 @@ usertrap(void)
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
-  } else {
+  } else if (r_scause() == 15){
+    uint64 va = r_stval();
+    if(cow_handler(p->pagetable,va)<0){
+      p->killed = 1;
+    }
+  }else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     p->killed = 1;
@@ -82,7 +87,29 @@ usertrap(void)
 
   usertrapret();
 }
+//lab
+int cow_handler(pagetable_t pgt,uint64 va){
+  if (va >= MAXVA)
+    return -1;
 
+  pte_t *pte = walk(pgt, va, 0);
+  if(pte ==0 || (*pte & PTE_U)== 0 || (*pte & PTE_V) == 0) 
+    return -1;
+  if((*pte & PTE_W)) // w bit is set, not our case
+    return 0;
+
+  uint64 from = PTE2PA(*pte);
+  uint64 to = (uint64) kalloc();
+  if(to==0)
+    return -1;
+
+  uint flags = PTE_FLAGS(*pte);
+  flags |= PTE_W;
+  memmove((void*)to, (void*)from, PGSIZE);
+  kfree((void*)from);
+  *pte = PA2PTE(to) | flags;
+  return 0;
+} 
 //
 // return to user space
 //
