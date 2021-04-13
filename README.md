@@ -7,7 +7,7 @@
 - [x] [Lab pgtbl: Page tables](https://github.com/WillDwz/MIT-6.S081-labs/tree/pgtbl)
 - [x] [Lab traps: Trap](https://github.com/WillDwz/MIT-6.S081-labs/tree/traps)
 - [x] [Lab lazy: Lazy allocation](https://github.com/WillDwz/MIT-6.S081-labs/tree/lazy)
-- [ ] [Lab cow: Copy-on-write fork]
+- [x] [Lab cow: Copy-on-write fork](https://github.com/WillDwz/MIT-6.S081-labs/tree/cow)
 - [ ] [Lab thread: Multithreading]
 - [ ] [Lab lock: Parallelism/locking]
 - [ ] [Lab fs: File system]
