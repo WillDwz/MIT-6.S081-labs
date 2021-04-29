@@ -8,7 +8,7 @@
 - [x] [Lab traps: Trap](https://github.com/WillDwz/MIT-6.S081-labs/tree/traps)
 - [x] [Lab lazy: Lazy allocation](https://github.com/WillDwz/MIT-6.S081-labs/tree/lazy)
 - [x] [Lab cow: Copy-on-write fork](https://github.com/WillDwz/MIT-6.S081-labs/tree/cow)
-- [x] [Lab thread: Multithreading](https://github.com/WillDwz/MIT-6.S081-labs/tree/traps)
+- [x] [Lab thread: Multithreading](https://github.com/WillDwz/MIT-6.S081-labs/tree/thread)
 - [ ] [Lab lock: Parallelism/locking]
 - [ ] [Lab fs: File system]
 - [ ] [Lab mmap: Mmap]
