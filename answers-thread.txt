@@ -1,0 +1,2 @@
+If two thread update same linked list at bucket[i] at the same time, then there would then be two list elements with next set to the
+former value of list. If two thread each make themselve to be the front of the linked list, first execution would be overwritten. 

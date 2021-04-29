@@ -14,6 +14,8 @@ struct barrier {
   int round;     // Barrier round
 } bstate;
 
+pthread_mutex_t lock;            // declare a lock
+
 static void
 barrier_init(void)
 {
@@ -30,7 +32,17 @@ barrier()
   // Block until all threads have called barrier() and
   // then increment bstate.round.
   //
-  
+  pthread_mutex_lock(&lock);       // acquire lock
+  ++bstate.nthread;
+  if (bstate.nthread == nthread){
+    ++bstate.round;
+    bstate.nthread = 0;
+    pthread_cond_broadcast(&bstate.barrier_cond); // wake up every thread sleeping on cond
+  }else{
+    pthread_cond_wait(&bstate.barrier_cond, &lock);  // go to sleep on cond, releasing lock mutex, acquiring upon wake up
+  }
+  // while(bstate.nthread != nthread)
+  pthread_mutex_unlock(&lock);     // release lock
 }
 
 static void *
@@ -67,6 +79,8 @@ main(int argc, char *argv[])
   srandom(0);
 
   barrier_init();
+  pthread_mutex_init(&lock, NULL); // initialize the lock
+  
 
   for(i = 0; i < nthread; i++) {
     assert(pthread_create(&tha[i], NULL, thread, (void *) i) == 0);
